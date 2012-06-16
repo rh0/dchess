@@ -41,7 +41,6 @@ function renderBoard() {
 }
 
 function nodeSend(message) {
-  console.dir(message);
   Drupal.Nodejs.socket.emit('message', message);
 }
 
@@ -88,6 +87,21 @@ Drupal.behaviors.clientGame = {
       return false;
     });
 
+    Drupal.Nodejs.callbacks.dChess = {
+      callback: function(message) {
+        if(message.channel == 'global_chess_channel') {
+          chess.load(message.moveFen);
+          renderBoard();
+          if(game.gameOver = chess.game_over()) {
+            game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
+            game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
+            game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
+            game.endState
+            alert('The Game is Over! \n' + game.endState);
+          }
+        }
+      }
+    };
     //Move event coming from the server.
 /*    ss.event.on('moveFen', function(fen){
       chess.load(fen);
