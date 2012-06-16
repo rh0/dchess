@@ -40,31 +40,50 @@ function renderBoard() {
   }
 }
 
-renderBoard();
-game = new Object();
-game.gameOver = false;
-game.endState = '';
-game.move = new Object();
-game.move.from='';
-game.move.to='';
 
-//Click action from this browser.
-$('#chess_board td').on('click', function(event) {
-  var turn = chess.turn();
-  var square = $(this).attr('id');
-  var piece = chess.get(square.toLowerCase());
-  if(game.move.from == '' && piece != null && piece.color == turn && !game.gameOver) {
-    $(this).addClass('selected');
-    game.move.from = square.toLowerCase();
-//    alert(square + ' has ' + piece.type);  
-  } 
-  else if(game.move.from != '') {
-    game.move.to = square.toLowerCase();
-    var mvRet = chess.move(game.move);
-    $('#' + game.move.from.toUpperCase()).removeClass('selected');
-    game.move.from = game.move.to = '';
-    if(mvRet != null){
-      ss.rpc('movePub.sendMove', chess.fen());
+Drupal.behaviors.clientGame = {
+  attach: function(context, settings) {
+    renderBoard();
+    game = new Object();
+    game.gameOver = false;
+    game.endState = '';
+    game.move = new Object();
+    game.move.from='';
+    game.move.to='';
+
+    //Click action from this browser.
+    $('#chess_board td').on('click', function(event) {
+      var turn = chess.turn();
+      var square = $(this).attr('id');
+      var piece = chess.get(square.toLowerCase());
+      if(game.move.from == '' && piece != null && piece.color == turn && !game.gameOver) {
+        $(this).addClass('selected');
+        game.move.from = square.toLowerCase();
+    //    alert(square + ' has ' + piece.type);  
+      } 
+      else if(game.move.from != '') {
+        game.move.to = square.toLowerCase();
+        var mvRet = chess.move(game.move);
+        $('#' + game.move.from.toUpperCase()).removeClass('selected');
+        game.move.from = game.move.to = '';
+        if(mvRet != null){
+          //ss.rpc('movePub.sendMove', chess.fen());
+          renderBoard();
+          if(game.gameOver = chess.game_over()) {
+            game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
+            game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
+            game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
+            game.endState
+            alert('The Game is Over! \n' + game.endState);
+          }
+        }
+      }
+      return false;
+    });
+
+    //Move event coming from the server.
+/*    ss.event.on('moveFen', function(fen){
+      chess.load(fen);
       renderBoard();
       if(game.gameOver = chess.game_over()) {
         game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
@@ -73,21 +92,8 @@ $('#chess_board td').on('click', function(event) {
         game.endState
         alert('The Game is Over! \n' + game.endState);
       }
-    }
+    });*/
   }
-});
-
-//Move event coming from the server.
-ss.event.on('moveFen', function(fen){
-  chess.load(fen);
-  renderBoard();
-  if(game.gameOver = chess.game_over()) {
-    game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
-    game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
-    game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
-    game.endState
-    alert('The Game is Over! \n' + game.endState);
-  }
-});
+}
 
 })(jQuery);
