@@ -4,6 +4,7 @@
  */
 function dchess_menu() {
   $items['chess'] = array(
+    'title' => 'Chess',
     'page callback' => 'dchess_board_render',
     'access arguments' => array('access content'),
     'type' => MENU_NORMAL_ITEM,
@@ -14,6 +15,8 @@ function dchess_menu() {
 
 function dchess_board_render() {
   drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
+  drupal_add_library('dchess', 'chessjs');
+  drupal_add_js(drupal_get_path('module', 'dchess').'/dchess.client.js');
   $output = theme('dchess_board');
   return $output;
 }
@@ -27,4 +30,19 @@ function dchess_theme($existing, $type, $theme, $path) {
       'template' => 'dchess_board',
     ),
   );
+}
+
+/**
+ * Implements hook_library().
+ */
+function dchess_library() {
+  $libraries['chessjs'] = array(
+    'title' => 'chess.js',
+    'website' => 'https://github.com/jhlywa/chess.js',
+    'version' => '0.1',
+    'js' => array(
+      drupal_get_path('module', 'dchess') . '/chess.js/chess.js' => array(),
+    ),
+  );
+  return $libraries;
 }
