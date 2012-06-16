@@ -16,9 +16,17 @@ function dchess_menu() {
 function dchess_board_render() {
   drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
   drupal_add_library('dchess', 'chessjs');
-  drupal_add_js(drupal_get_path('module', 'dchess').'/dchess.client.js');
   $output = theme('dchess_board');
   return $output;
+}
+
+/**
+ *  Implements hook_nodejs_handlers_info
+ */
+function dchess_nodejs_handlers_info() {
+  return array(
+    drupal_get_path('module', 'dchess').'/dchess.client.js',
+  );
 }
 
 /**

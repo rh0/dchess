@@ -40,6 +40,10 @@ function renderBoard() {
   }
 }
 
+function nodeSend(message) {
+  console.dir(message);
+  Drupal.Nodejs.socket.emit('message', message);
+}
 
 Drupal.behaviors.clientGame = {
   attach: function(context, settings) {
@@ -59,15 +63,17 @@ Drupal.behaviors.clientGame = {
       if(game.move.from == '' && piece != null && piece.color == turn && !game.gameOver) {
         $(this).addClass('selected');
         game.move.from = square.toLowerCase();
-    //    alert(square + ' has ' + piece.type);  
       } 
       else if(game.move.from != '') {
         game.move.to = square.toLowerCase();
         var mvRet = chess.move(game.move);
         $('#' + game.move.from.toUpperCase()).removeClass('selected');
-        game.move.from = game.move.to = '';
         if(mvRet != null){
-          //ss.rpc('movePub.sendMove', chess.fen());
+          //alert(Drupal.Nodejs.socket.socket.sessionid);
+          nodeSend({
+            type: 'move',
+            moveFen: chess.fen()
+          });
           renderBoard();
           if(game.gameOver = chess.game_over()) {
             game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
@@ -76,6 +82,7 @@ Drupal.behaviors.clientGame = {
             game.endState
             alert('The Game is Over! \n' + game.endState);
           }
+          game.move.from = game.move.to = '';
         }
       }
       return false;
