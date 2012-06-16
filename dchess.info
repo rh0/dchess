@@ -5,3 +5,4 @@ version = VERSION
 core = 7.x
 files[] = dchess.module
 
+dependencies[] = jquery_update (7.x-2.x-dev)
