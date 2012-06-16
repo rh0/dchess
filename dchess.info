@@ -1,0 +1,7 @@
+name = Drupal Chess
+description = A small chess application usgin Drupal NodeJS integration
+package = chess
+version = VERSION
+core = 7.x
+files[] = dchess.module
+
