@@ -1,0 +1,30 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function dchess_menu() {
+  $items['chess'] = array(
+    'page callback' => 'dchess_board_render',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+function dchess_board_render() {
+  drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
+  $output = theme('dchess_board');
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function dchess_theme($existing, $type, $theme, $path) {
+  return array(
+    'dchess_board' => array(
+      'template' => 'dchess_board',
+    ),
+  );
+}
