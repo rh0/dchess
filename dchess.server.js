@@ -19,6 +19,8 @@ redisDB.on("error", function (err) {
   console.log("Redis Error! " + err);
 });
 
+redisDB.del("userbank");
+
 exports.setup = function (config) {
   publishMessageToClient = config.publishMessageToClient;
   publishMessageToChannel = config.publishMessageToChannel;
@@ -29,6 +31,7 @@ exports.setup = function (config) {
   })
   .on('client-authenticated', function (sessionId, authData) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
+    publishMessageToClient(sessionId, {type: 'auth', isauth: true});
     config.addClientToChannel(sessionId, gameChannel);
     //adding user to the userbank to track sessions
     redisDB.hmset("userbank", sessionId, authData.uid);
@@ -40,7 +43,7 @@ exports.setup = function (config) {
     handleMessage(sessionId, message);
   })
   .on('client-disconnect', function (sessionId) {
-    //console.log('Got disconnect event for session ' + sessionId);
+    console.log('Got disconnect event for session ' + sessionId);
     redisDB.hdel("userbank", sessionId);
     redisDB.hgetall("userbank", function(err, reply) {
       console.log(reply);
@@ -51,7 +54,16 @@ exports.setup = function (config) {
 function handleMessage(sessionId, message) {
   switch(message.type) {
     case "initiate-game":
-      console.log('Got message event for session ' + sessionId + ': Game ID -> ' + message.gameid);
+      var gameFromDrupal = JSON.parse(message.gamedata);
+      redisDB.hget("userbank", sessionId, function(err, reply) {
+        console.log("reply: " + reply);
+        console.log("err: " + err);
+      });
+
+      console.log('Got message event for session ' + sessionId + ': Game Data -> ' + message.gamedata);
+      /*if(sessionDrupalUid == gameFromDrupal.white || sessionDrupalUid == gameFromDrupal.black) {
+        console.log('User: ' + sessionDrupalUid + ' is a player!');
+      }*/
       break;
     case "move":
       message.channel = gameChannel;

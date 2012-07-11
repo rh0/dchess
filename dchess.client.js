@@ -15,6 +15,8 @@ var pieces = {
   'K': '&#9812;'
 };
 
+var canPlay = false;
+
 var chess = new Chess();
 
 //Take the curent game state, and render on a blank board.
@@ -40,22 +42,13 @@ function renderBoard() {
   }
 }
 
+//Send a message back to the node server
 function nodeSend(message) {
   Drupal.Nodejs.socket.emit('message', message);
 }
 
 Drupal.behaviors.clientGame = {
   attach: function(context, settings) {
-    //grabbing our JSON coming from the arg in the menu
-    var gameFromDrupal = jQuery.parseJSON(Drupal.settings.dchess);
-    if (gameFromDrupal.hasOwnProperty('game_id')){
-      nodeSend({
-        type: 'initiate-game',
-        gameid: gameFromDrupal.game_id
-      });
-    }
-
-    //alert("White: " + gameFromDrupal.white + "Black: " + gameFromDrupal.black + "Game ID: " + gameFromDrupal.game_id);
 
     renderBoard();
 
@@ -101,6 +94,16 @@ Drupal.behaviors.clientGame = {
 
     Drupal.Nodejs.callbacks.dChess = {
       callback: function(message) {
+        if(message.type == 'auth' && message.isauth == true) {
+          //we're authenticated so tell node what game we're looking at 
+          //grabbing our JSON coming from the Drupal menu callback
+          if(Drupal.settings.dchess != undefined){
+            nodeSend({
+              type: 'initiate-game',
+              gamedata: Drupal.settings.dchess
+            });
+          }
+        }
         if(message.channel == 'global_chess_channel') {
           chess.load(message.moveFen);
           renderBoard();
