@@ -24,31 +24,39 @@ exports.setup = function (config) {
   publishMessageToChannel = config.publishMessageToChannel;
 
   process.on('client-connection', function (sessionId) {
-    console.log('Got connection event for session ' + sessionId);
+    //console.log('Got connection event for session ' + sessionId);
     //publishMessageToClient(sessionId, {data: {subject: 'Example extension', body: 'Hello, you just connected.'}});
   })
   .on('client-authenticated', function (sessionId, authData) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
-    //publishMessageToClient(sessionId, {data: {subject: 'Example extension', body: 'Welcome, you are authenticated.'}});
     config.addClientToChannel(sessionId, gameChannel);
-    redisDB.hmset("userbank", authData.uid, sessionId);
+    //adding user to the userbank to track sessions
+    redisDB.hmset("userbank", sessionId, authData.uid);
     redisDB.hgetall("userbank", function(err, reply) {
       console.log(reply);
     });
   })
   .on('client-message', function (sessionId, message) {
-    console.log('Got message event for session ' + sessionId + ': Fen -> ' + message.moveFen);
     handleMessage(sessionId, message);
-//    publishMessageToClient(sessionId, {data: {subject: 'Example extension', body: 'You sent the message: ' + require('util').inspect(message)}});
   })
   .on('client-disconnect', function (sessionId) {
-    console.log('Got disconnect event for session ' + sessionId);
+    //console.log('Got disconnect event for session ' + sessionId);
+    redisDB.hdel("userbank", sessionId);
+    redisDB.hgetall("userbank", function(err, reply) {
+      console.log(reply);
+    });
   });
 };
 
 function handleMessage(sessionId, message) {
-  if(message.type == 'move') {
-    message.channel = gameChannel;
-    publishMessageToChannel(message);
+  switch(message.type) {
+    case "initiate-game":
+      console.log('Got message event for session ' + sessionId + ': Game ID -> ' + message.gameid);
+      break;
+    case "move":
+      message.channel = gameChannel;
+      publishMessageToChannel(message);
+      console.log('Got message event for session ' + sessionId + ': Fen -> ' + message.moveFen);
+      break;
   }
 }

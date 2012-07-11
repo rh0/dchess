@@ -46,8 +46,19 @@ function nodeSend(message) {
 
 Drupal.behaviors.clientGame = {
   attach: function(context, settings) {
-    //alert(Drupal.settings.dchess);
+    //grabbing our JSON coming from the arg in the menu
+    var gameFromDrupal = jQuery.parseJSON(Drupal.settings.dchess);
+    if (gameFromDrupal.hasOwnProperty('game_id')){
+      nodeSend({
+        type: 'initiate-game',
+        gameid: gameFromDrupal.game_id
+      });
+    }
+
+    //alert("White: " + gameFromDrupal.white + "Black: " + gameFromDrupal.black + "Game ID: " + gameFromDrupal.game_id);
+
     renderBoard();
+
     game = new Object();
     game.gameOver = false;
     game.endState = '';
