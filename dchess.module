@@ -13,9 +13,12 @@ function dchess_menu() {
   return $items;
 }
 
-function dchess_board_render() {
+function dchess_board_render($game_key = NULL) {
   drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
   drupal_add_library('dchess', 'chessjs');
+  if(isset($game_key)) {
+    drupal_add_js(array('dchess' => 'w:2,b:3'), array('type' => 'setting'));
+  }
   $output = theme('dchess_board');
   return $output;
 }

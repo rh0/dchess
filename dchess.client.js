@@ -46,6 +46,7 @@ function nodeSend(message) {
 
 Drupal.behaviors.clientGame = {
   attach: function(context, settings) {
+    //alert(Drupal.settings.dchess);
     renderBoard();
     game = new Object();
     game.gameOver = false;

@@ -11,15 +11,13 @@
 var publishMessageToClient,
     publishMessageToChannel,
     gameChannel = 'global_chess_channel',
-    gameCount = 0,
+    gameCount = 0;
     redis = require("redis"),
-    gameBank = redis.createClient();
+    redisDB = redis.createClient();
 
-gameBank.on("error", function (err) {
+redisDB.on("error", function (err) {
   console.log("Redis Error! " + err);
 });
-
-gameBank.hmset("game", "channel", gameChannel);
 
 exports.setup = function (config) {
   publishMessageToClient = config.publishMessageToClient;
@@ -33,12 +31,8 @@ exports.setup = function (config) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
     //publishMessageToClient(sessionId, {data: {subject: 'Example extension', body: 'Welcome, you are authenticated.'}});
     config.addClientToChannel(sessionId, gameChannel);
-    console.log(gameBank.ping());
-    gameBank.hvals("game", function(err, reply) {
-      console.log(reply);
-    });
-    gameBank.hset("game", "player1", authData.uid);
-    gameBank.hvals("game", function(err, reply) {
+    redisDB.hmset("userbank", authData.uid, sessionId);
+    redisDB.hgetall("userbank", function(err, reply) {
       console.log(reply);
     });
   })
