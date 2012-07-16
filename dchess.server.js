@@ -54,16 +54,41 @@ exports.setup = function (config) {
 function handleMessage(sessionId, message) {
   switch(message.type) {
     case "initiate-game":
-      var gameFromDrupal = JSON.parse(message.gamedata);
-      redisDB.hget("userbank", sessionId, function(err, reply) {
-        console.log("reply: " + reply);
-        console.log("err: " + err);
-      });
+      var gameFromDrupal = JSON.parse(message.gamedata),
+          gameId = "game" + gameFromDrupal.game_id,
+          drupalUid = null;
+          
+      if(gameFromDrupal != null) {
+        //console.log("gameId: " + gameId);
+        redisDB.exists(gameId, function(err, reply){
+          if(reply == 0) {
+            redisDB.hmset(gameId, 
+                          "white", gameFromDrupal.white, 
+                          "black", gameFromDrupal.black,
+                          "turn", gameFromDrupal.turn);
+          }
+        });
 
-      console.log('Got message event for session ' + sessionId + ': Game Data -> ' + message.gamedata);
-      /*if(sessionDrupalUid == gameFromDrupal.white || sessionDrupalUid == gameFromDrupal.black) {
-        console.log('User: ' + sessionDrupalUid + ' is a player!');
-      }*/
+        redisDB.hget("userbank", sessionId, function(err, reply) {
+          if(err == null) {
+            drupalUid = reply;
+            if(drupalUid == gameFromDrupal.white){
+              redisDB.hmset(gameId, "whiteSess", sessionId);
+              console.log('User: ' + drupalUid + ' is playing white!');
+            }
+            if(drupalUid == gameFromDrupal.black) {
+              redisDB.hmset(gameId, "blackSess", sessionId);
+              console.log('User: ' + drupalUid + ' is playing black!');
+            }
+
+            redisDB.hgetall(gameId, function(err, reply){
+              console.log(reply);
+            });
+
+          }
+        });
+      }
+
       break;
     case "move":
       message.channel = gameChannel;

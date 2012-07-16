@@ -16,6 +16,7 @@ function dchess_menu() {
 function dchess_board_render($game_key = NULL) {
   drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
   drupal_add_library('dchess', 'chessjs');
+  //Our dummy game data, let only user 2 and 3 play
   if(isset($game_key)) {
     $game = array(
       'white' => 2, 

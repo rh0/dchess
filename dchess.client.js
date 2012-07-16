@@ -83,7 +83,6 @@ Drupal.behaviors.clientGame = {
             game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
             game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
             game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
-            game.endState
             alert('The Game is Over! \n' + game.endState);
           }
           game.move.from = game.move.to = '';
@@ -111,7 +110,6 @@ Drupal.behaviors.clientGame = {
             game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
             game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
             game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
-            game.endState
             alert('The Game is Over! \n' + game.endState);
           }
         }
