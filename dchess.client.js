@@ -115,18 +115,6 @@ Drupal.behaviors.clientGame = {
         }
       }
     };
-    //Move event coming from the server.
-/*    ss.event.on('moveFen', function(fen){
-      chess.load(fen);
-      renderBoard();
-      if(game.gameOver = chess.game_over()) {
-        game.endState = chess.in_checkmate() ? 'CHECKMATE!' : game.endState + '';
-        game.endState = chess.in_draw() ? 'DRAW!' : game.endState + '';
-        game.endState = chess.in_stalemate() ? 'STALEMATE!' : game.endState + '';
-        game.endState
-        alert('The Game is Over! \n' + game.endState);
-      }
-    });*/
   }
 }
 
