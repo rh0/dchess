@@ -15,7 +15,8 @@ var clientGame = {
     'Q': '&#9813;',
     'K': '&#9812;'
   },
-  canPlay: false,
+  gameId: '',
+  channel: '',
   playerType: 'prohibited',
   gameOver: false,
   endState: '',
@@ -65,7 +66,11 @@ Drupal.Nodejs.callbacks.dChess = {
         });
       }
     }
-    if(message.channel == 'global_chess_channel') {
+    if(message.type == 'config') {
+     clientGame.channel = message.channel;
+     clientGame.playerType = message.playerType;
+    }
+    if(message.channel == clientGame.channel) {
       clientGame.chess.load(message.moveFen);
       clientGame.renderBoard();
       if(clientGame.gameOver = clientGame.chess.game_over()) {
@@ -100,6 +105,7 @@ Drupal.behaviors.clientGame = {
         if(mvRet != null){
           //alert(Drupal.Nodejs.socket.socket.sessionid);
           nodeSend({
+            channel: clientGame.channel,
             type: 'move',
             moveFen: clientGame.chess.fen()
           });

@@ -10,7 +10,7 @@
 
 var publishMessageToClient,
     publishMessageToChannel,
-    gameChannel = 'global_chess_channel',
+    gameChannel = 'chessChannel',
     gameCount = 0;
     redis = require("redis"),
     redisDB = redis.createClient();
@@ -32,7 +32,6 @@ exports.setup = function (config) {
   .on('client-authenticated', function (sessionId, authData) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
     publishMessageToClient(sessionId, {type: 'auth', isauth: true});
-    config.addClientToChannel(sessionId, gameChannel);
     //adding user to the userbank to track sessions
     redisDB.hmset("userbank", sessionId, authData.uid);
     redisDB.hgetall("userbank", function(err, reply) {
@@ -40,7 +39,7 @@ exports.setup = function (config) {
     });
   })
   .on('client-message', function (sessionId, message) {
-    handleMessage(sessionId, message);
+    handleMessage(sessionId, message, config);
   })
   .on('client-disconnect', function (sessionId) {
     console.log('Got disconnect event for session ' + sessionId);
@@ -51,18 +50,20 @@ exports.setup = function (config) {
   });
 };
 
-function handleMessage(sessionId, message) {
+function handleMessage(sessionId, message, config) {
   switch(message.type) {
     case "initiate-game":
       var gameFromDrupal = JSON.parse(message.gamedata),
-          gameId = "game" + gameFromDrupal.game_id,
+          gameChannelId = gameChannel + gameFromDrupal.game_id,
           drupalUid = null;
           
       if(gameFromDrupal != null) {
-        //console.log("gameId: " + gameId);
-        redisDB.exists(gameId, function(err, reply){
+        config.addClientToChannel(sessionId, gameChannelId);
+        console.log("gameId: " + gameChannelId);
+        console.log(gameFromDrupal);
+        redisDB.exists(gameChannelId, function(err, reply){
           if(reply == 0) {
-            redisDB.hmset(gameId, 
+            redisDB.hmset(gameChannelId, 
                           "white", gameFromDrupal.white, 
                           "black", gameFromDrupal.black,
                           "turn", gameFromDrupal.turn);
@@ -70,28 +71,40 @@ function handleMessage(sessionId, message) {
         });
 
         redisDB.hget("userbank", sessionId, function(err, reply) {
-          if(err == null) {
+          if(err == null) { 
             drupalUid = reply;
             if(drupalUid == gameFromDrupal.white){
-              redisDB.hmset(gameId, "whiteSess", sessionId);
+              publishMessageToClient(sessionId, {type: 'config',
+                                                 channel: gameChannelId,
+                                                 playerType: 'white'
+                                                 });
+              redisDB.hmset(gameChannelId, "whiteSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing white!');
             }
-            if(drupalUid == gameFromDrupal.black) {
-              redisDB.hmset(gameId, "blackSess", sessionId);
+            else if(drupalUid == gameFromDrupal.black) {
+              publishMessageToClient(sessionId, {type: 'config',
+                                                 channel: gameChannelId,
+                                                 playerType: 'black'
+                                                 });
+              redisDB.hmset(gameChannelId, "blackSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing black!');
             }
+            else {
+              publishMessageToClient(sessionId, {type: 'config',
+                                                 channel: gameChannelId,
+                                                 playerType: 'observer'
+                                                 });
+            }
 
-            redisDB.hgetall(gameId, function(err, reply){
+            redisDB.hgetall(gameChannelId, function(err, reply){
               console.log(reply);
             });
-
           }
         });
       }
-
       break;
     case "move":
-      message.channel = gameChannel;
+      //message.channel = gameChannel;
       publishMessageToChannel(message);
       console.log('Got message event for session ' + sessionId + ': Fen -> ' + message.moveFen);
       break;
