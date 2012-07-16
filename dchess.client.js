@@ -51,6 +51,33 @@ function nodeSend (message) {
   Drupal.Nodejs.socket.emit('message', message);
 }
 
+//recieves message from the node server
+Drupal.Nodejs.callbacks.dChess = {
+  callback: function(message) {
+    //Got an auth message from node
+    if(message.type == 'auth' && message.isauth == true) {
+      //we're authenticated so tell node what game we're looking at 
+      //grabbing our JSON coming from the Drupal menu callback
+      if(Drupal.settings.dchess != undefined){
+        nodeSend({
+          type: 'initiate-game',
+          gamedata: Drupal.settings.dchess
+        });
+      }
+    }
+    if(message.channel == 'global_chess_channel') {
+      clientGame.chess.load(message.moveFen);
+      clientGame.renderBoard();
+      if(clientGame.gameOver = clientGame.chess.game_over()) {
+        clientGame.endState = clientGame.chess.in_checkmate() ? 'CHECKMATE!' : clientGame.endState + '';
+        clientGame.endState = clientGame.chess.in_draw() ? 'DRAW!' : clientGame.endState + '';
+        clientGame.endState = clientGame.chess.in_stalemate() ? 'STALEMATE!' : clientGame.endState + '';
+        alert('The Game is Over! \n' + clientGame.endState);
+      }
+    }
+  }
+};
+
 //Pageload has occured
 Drupal.behaviors.clientGame = {
   attach: function(context, settings) {
@@ -88,33 +115,6 @@ Drupal.behaviors.clientGame = {
       }
       return false;
     });
-
-    //recieves message from the node server
-    Drupal.Nodejs.callbacks.dChess = {
-      callback: function(message) {
-        //Got an auth message from node
-        if(message.type == 'auth' && message.isauth == true) {
-          //we're authenticated so tell node what game we're looking at 
-          //grabbing our JSON coming from the Drupal menu callback
-          if(Drupal.settings.dchess != undefined){
-            nodeSend({
-              type: 'initiate-game',
-              gamedata: Drupal.settings.dchess
-            });
-          }
-        }
-        if(message.channel == 'global_chess_channel') {
-          clientGame.chess.load(message.moveFen);
-          renderBoard();
-          if(clientGame.gameOver = clientGame.chess.game_over()) {
-            clientGame.endState = clientGame.chess.in_checkmate() ? 'CHECKMATE!' : clientGame.endState + '';
-            clientGame.endState = clientGame.chess.in_draw() ? 'DRAW!' : clientGame.endState + '';
-            clientGame.endState = clientGame.chess.in_stalemate() ? 'STALEMATE!' : clientGame.endState + '';
-            alert('The Game is Over! \n' + clientGame.endState);
-          }
-        }
-      }
-    };
   }
 }
 
