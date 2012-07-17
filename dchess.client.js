@@ -1,5 +1,7 @@
 (function ($) {
-
+/**
+ * @TODO: moke this a method fool!
+ */
 var clientGame = {
   pieces: {
     'p': '&#9823;',
