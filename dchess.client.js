@@ -1,6 +1,7 @@
 (function ($) {
 /**
- * @TODO: moke this a method fool!
+ * @TODO: Make this a module fool! Can even get all fancy with
+ *        cascading.
  */
 var clientGame = {
   pieces: {
@@ -96,7 +97,7 @@ Drupal.behaviors.clientGame = {
       var turn = clientGame.chess.turn();
       var square = $(this).attr('id');
       var piece = clientGame.chess.get(square.toLowerCase());
-      if(clientGame.move.from == '' && piece != null && piece.color == turn && !clientGame.gameOver) {
+      if(clientGame.move.from == '' && piece != null && piece.color == turn && piece.color == clientGame.playerType && !clientGame.gameOver) {
         $(this).addClass('selected');
         clientGame.move.from = square.toLowerCase();
       } 

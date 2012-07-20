@@ -8,6 +8,8 @@
  * when they connect, are authenticated, or send a message.
  */
 
+// Consider reworking this var into a module, and including our functions below.
+// This is likely better practice, and at least will allow for some experience.
 var publishMessageToClient,
     publishMessageToChannel,
     gameChannel = 'chessChannel',
@@ -76,7 +78,7 @@ function handleMessage(sessionId, message, config) {
             if(drupalUid == gameFromDrupal.white){
               publishMessageToClient(sessionId, {type: 'config',
                                                  channel: gameChannelId,
-                                                 playerType: 'white'
+                                                 playerType: 'w'
                                                  });
               redisDB.hmset(gameChannelId, "whiteSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing white!');
@@ -84,7 +86,7 @@ function handleMessage(sessionId, message, config) {
             else if(drupalUid == gameFromDrupal.black) {
               publishMessageToClient(sessionId, {type: 'config',
                                                  channel: gameChannelId,
-                                                 playerType: 'black'
+                                                 playerType: 'b'
                                                  });
               redisDB.hmset(gameChannelId, "blackSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing black!');
