@@ -66,8 +66,8 @@ function handleMessage(sessionId, message, config) {
         redisDB.exists(gameChannelId, function(err, reply){
           if(reply == 0) {
             redisDB.hmset(gameChannelId, 
-                          "white", gameFromDrupal.white, 
-                          "black", gameFromDrupal.black,
+                          "w", gameFromDrupal.w, 
+                          "b", gameFromDrupal.b,
                           "turn", gameFromDrupal.turn);
           }
         });
@@ -75,20 +75,18 @@ function handleMessage(sessionId, message, config) {
         redisDB.hget("userbank", sessionId, function(err, reply) {
           if(err == null) { 
             drupalUid = reply;
-            if(drupalUid == gameFromDrupal.white){
+            if(drupalUid == gameFromDrupal.w){
               publishMessageToClient(sessionId, {type: 'config',
                                                  channel: gameChannelId,
                                                  playerType: 'w'
                                                  });
-              redisDB.hmset(gameChannelId, "whiteSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing white!');
             }
-            else if(drupalUid == gameFromDrupal.black) {
+            else if(drupalUid == gameFromDrupal.b) {
               publishMessageToClient(sessionId, {type: 'config',
                                                  channel: gameChannelId,
                                                  playerType: 'b'
                                                  });
-              redisDB.hmset(gameChannelId, "blackSess", sessionId);
               console.log('User: ' + drupalUid + ' is playing black!');
             }
             else {
@@ -106,9 +104,24 @@ function handleMessage(sessionId, message, config) {
       }
       break;
     case "move":
-      //message.channel = gameChannel;
-      publishMessageToChannel(message);
-      console.log('Got message event for session ' + sessionId + ': Fen -> ' + message.moveFen);
+      // We need to do some light server validation.  Make sure that the move is
+      // coming from the session and for the color we expect.
+      redisDB.hget("userbank", sessionId, function(err, reply) {
+        if(err == null) {
+          // Grab our drupal UID for this session.
+          drupalUid = reply;
+          // Load the game for this channel.
+          redisDB.hgetall(message.channel, function (err, gameObj) {
+            // Is it this users turn to play?
+            if(gameObj[gameObj.turn] == drupalUid) {
+              // Update 'turn' in our game store, and send the move out to the channel.
+              redisDB.hmset(message.channel, 'turn', message.turn);
+              config.publishMessageToChannel(message);
+              console.log(gameObj.turn + ' made a valid move ' + message.moveFen);
+            }
+          });
+        }
+      });
       break;
   }
 }

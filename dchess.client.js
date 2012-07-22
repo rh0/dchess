@@ -97,6 +97,7 @@ Drupal.behaviors.clientGame = {
       var turn = clientGame.chess.turn();
       var square = $(this).attr('id');
       var piece = clientGame.chess.get(square.toLowerCase());
+      // Quite a check, we can probably roll this into our js module.
       if(clientGame.move.from == '' && piece != null && piece.color == turn && piece.color == clientGame.playerType && !clientGame.gameOver) {
         $(this).addClass('selected');
         clientGame.move.from = square.toLowerCase();
@@ -110,6 +111,7 @@ Drupal.behaviors.clientGame = {
           nodeSend({
             channel: clientGame.channel,
             type: 'move',
+            turn: clientGame.chess.turn(),
             moveFen: clientGame.chess.fen()
           });
           clientGame.renderBoard();
