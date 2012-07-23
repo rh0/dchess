@@ -64,3 +64,29 @@ function dchess_library() {
   );
   return $libraries;
 }
+
+// ====----  Game Entity  ----==== //
+
+/**
+ * Implements hook_entity_info().
+ * @TODO: Give this some thought!  We could extend the EntityClass and controller,
+ * but do we need to?  How robust should this entity really be?  How deep do we
+ * need to go?
+ */
+/*function dchess_entity_info() {
+  $return = array(
+    'dchess_game' => array(
+      'label' => t('Chess Game Entity'),
+      'controller class' => 'EntityClass',
+      'base table' => 'dchess_game',
+      'revision table' => '',
+      'uri callback' => '',
+      'fieldable' => TRUE,
+      'entity keys' => array(
+        'id' => 'gid',
+        'bundle' => '',
+      ),
+    ),
+  );
+  return $return;
+}*/
