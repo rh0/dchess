@@ -40,7 +40,7 @@ function dchess_schema() {
       'state' => array(
         'description' => 'An indicator of the game state.',
         'type' => 'text',
-        'not null' => FALSE,
+        'not null' => TRUE,
         'default' => 'idle',
       ),
       'winner' => array(
