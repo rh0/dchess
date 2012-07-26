@@ -17,7 +17,6 @@ function dchess_schema() {
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        ),
       ),
       'w' => array(
         'description' => 'User ID of the white player.',
@@ -35,33 +34,24 @@ function dchess_schema() {
         'description' => 'The color of the current turn.',
         'type' => 'text',
         'not null' => FALSE,
-        'default' => 'w',
       ),
       'state' => array(
         'description' => 'An indicator of the game state.',
         'type' => 'text',
         'not null' => TRUE,
-        'default' => 'idle',
       ),
       'winner' => array(
         'description' => 'User ID of the winner.',
         'type' => 'int',
         'not null' => FALSE,
-        'deafult' => null,
       ),
+    ),
     'indexes' => array(
       'uid' => array('uid'),
-      ),
+    ),
     'primary key' => array('gid'),
   );
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function dchess_install() {
-  drupal_install_schema('dchess');
 }
 
 /**
