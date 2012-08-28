@@ -9,8 +9,75 @@ function dchess_menu() {
     'access arguments' => array('access content'),
     'type' => MENU_NORMAL_ITEM,
   );
+  
+  //This will likely take a slight rework, as I think presently it is
+  //assuming we are adding a "type" rather than an entity itself.
+  //Perhaps not, just needs clarification. See:
+  // http://www.trellon.com/content/blog/creating-own-entities-entity-api
+  $items['dchess/add'] = array(
+    'title' => 'Add Chess Game',
+    'page callback' => 'dchess_admin_add_page',
+    'access arguments' => array('administer dchess_game entities'),
+    'file' => 'dchess.admin.inc',
+    'type' => MENU_LOCAL_ACTION,
+    'tab_parent' => 'dchess',
+    'tab_root' => 'dchess',
+  );
+
+  $game_uri = 'dchess/%dchess_game';
+  $game_uri_arg_position = 1;
+
+  $items[$game_uri] = array(
+    'title callback' => 'entity_label',
+    'title arguments' => array('dchess_game', $game_uri_arg_position),
+    'page callback' => 'dchess_view',
+    'page arguments' => array($game_uri_arg_position),
+    'access callback' => 'entity_access',
+    'access arguments' => array('view', 'dchess_game', $game_uri_arg_position),
+    'file' => 'dchess.admin.inc',
+  );
+
+  $items[$game_uri . '/view'] = array(
+    'title' => 'View',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  $items[$game_uri . '/delete'] = array(
+    'title' => 'Delete Chess Game',
+    'title callback' => 'dchess_label',
+    'title arguments' => array($game_uri_arg_position),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dchess_delete_form', $game_uri_arg_position),
+    'access callback' => 'entity_access',
+    'access arguments' => array('view', 'dchess_game', $game_uri_arg_position),
+    'file' => 'dchess.admin.inc',
+  );
+
+  $items[$game_uri . '/edit'] = array(
+    'title' => 'Edit',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dchess_form', $game_uri_arg_position),
+    'access callback' => 'entity_access',
+    'access arguments' => array('view', 'dchess_game', $game_uri_arg_position),
+    'file' => 'dchess.admin.inc',
+    'type' => MENU_LOCAL_TASK,
+    'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+  );
 
   return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function dchess_permission() {
+  return array(
+    'administer dchess_game entities' =>  array(
+      'title' => t('Administer Chess Games'),
+      'description' => t('Allows users to create/edit/delete chess games'),
+    ),
+  );
 }
 
 function dchess_board_render($game_key = NULL) {
@@ -73,20 +140,42 @@ function dchess_library() {
  * but do we need to?  How robust should this entity really be?  How deep do we
  * need to go?
  */
-/*function dchess_entity_info() {
+function dchess_entity_info() {
   $return = array(
     'dchess_game' => array(
       'label' => t('Chess Game Entity'),
-      'controller class' => 'EntityClass',
       'base table' => 'dchess_game',
-      'revision table' => '',
-      'uri callback' => '',
+      'load hook' => 'dchess_load',
+      'uri callback' => 'entity_class_uri',
+      'label callback' => 'entity_class_label',
       'fieldable' => TRUE,
       'entity keys' => array(
         'id' => 'gid',
-        'bundle' => '',
+      ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Default'),
+          'custom settings' => FALSE,
+        ),
+      ),
+      'module' => 'dchess',
+      'access callback' => 'dchess_game_access',
+      'admin ui' => array(
+        'path' => 'admin/structure/dchess',
+        'file' => 'dchess.admin.inc',
       ),
     ),
   );
   return $return;
-}*/
+}
+
+/**
+ * Implementing dchess_game_access callback.
+ *
+ * This is our basica access callback for entity API.  Presently only
+ * returning TRUE, for quick development.  Ultimately this should
+ * be fleshed out a bit more to appropriately manage perms.
+ */
+function dchess_game_access($op, $type = NULL, $account = NULL) {
+  return TRUE;
+}
