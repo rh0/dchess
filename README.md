@@ -1,5 +1,4 @@
-Chess, Drupal, NodeJS
-=====================
+#Chess, Drupal, NodeJS
 
 This is an experimental chess application.  The purpose is to
 demonstrate the integration of a more "complex" node application
