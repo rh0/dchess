@@ -2,10 +2,6 @@
 
 This is an experimental chess application.  The purpose is to
 demonstrate the integration of a more "complex" node application
-to the Drupal environment.
+to the Drupal environment using the [nodejs integration module](http://drupal.org/project/nodejs).
 
-You will of course need the "nodejs integration module" and 
-follow the installation and configuration guidelines there.
-
-Be sure that the server config has the dchess.server.js lodaed as
-an extension.  Also you will need to set clientsCanWriteToClients to true. 
+__This module is still under active development.__
