@@ -38,7 +38,7 @@ function dchess_board_render($game_key = NULL) {
       'w' => 2, 
       'b' => 3,
       'turn' => 'w',
-      'game_id' => 123
+      'game_id' => $game_key
     );
     drupal_add_js(array('dchess' => drupal_json_encode($game)), array('type' => 'setting'));
   }

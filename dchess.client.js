@@ -98,6 +98,8 @@ Drupal.behaviors.clientGame = {
       var square = $(this).attr('id');
       var piece = clientGame.chess.get(square.toLowerCase());
       // Quite a check, we can probably roll this into our js module.
+      // @TODO: There is an error on move validation somewhere in here.  A user
+      // can make a couple invalid moves in a row, and these checks then fail.
       if(clientGame.move.from == '' && piece != null && piece.color == turn && piece.color == clientGame.playerType && !clientGame.gameOver) {
         $(this).addClass('selected');
         clientGame.move.from = square.toLowerCase();
