@@ -1,0 +1,25 @@
+<!doctype html>
+<html data-ng-app="dChess">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <script src="chessjs/chess.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+  <script src="chess.js"></script>
+  <link rel="stylesheet" href="chess.css">
+</head>
+<body>
+  <div data-ng-controller="ChessCtrl">
+    <input type="button" value="rotate" ng-click="rotateBoard()" />
+    <div id="board_content">
+      <table id="chess_board">
+      <tr data-ng-repeat="boardRow in board">
+        <td data-ng-repeat="boardCol in boardRow" class="{{boardCol.col + boardCol.row}} {{boardCol.selected}}">
+          <a class="piece" data-ng-click="clickCapture($event)">{{boardCol.piece}}</a>
+          {{boardCol.col}}{{boardCol.row}}
+        </td>
+      </tr>
+    </table>
+    </div>
+  </div>
+</body>
+</html>

@@ -30,8 +30,10 @@ function dchess_permission() {
 }
 
 function dchess_board_render($game_key = NULL) {
-  drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
   drupal_add_library('dchess', 'chessjs');
+  drupal_add_js('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js', 'external');
+  drupal_add_js(drupal_get_path('module', 'dchess') . '/new-chess.js');
+  drupal_add_css(drupal_get_path('module', 'dchess').'/chess.css');
   //Our dummy game data, let only user 2 and 3 play
   if(isset($game_key)) {
     $game = array(
@@ -40,7 +42,7 @@ function dchess_board_render($game_key = NULL) {
       'turn' => 'w',
       'game_id' => $game_key
     );
-    drupal_add_js(array('dchess' => drupal_json_encode($game)), array('type' => 'setting'));
+    //drupal_add_js(array('dchess' => drupal_json_encode($game)), array('type' => 'setting'));
   }
   $output = theme('dchess_board');
   return $output;
@@ -51,7 +53,7 @@ function dchess_board_render($game_key = NULL) {
  */
 function dchess_nodejs_handlers_info() {
   return array(
-    drupal_get_path('module', 'dchess').'/dchess.client.js',
+    //drupal_get_path('module', 'dchess').'/dchess.client.js',
   );
 }
 
@@ -81,3 +83,6 @@ function dchess_library() {
   return $libraries;
 }
 
+function dchess_preprocess_html(&$vars) {
+  $vars['attributes_array']['data-ng-app'] = "dChess"; 
+}
