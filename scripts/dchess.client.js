@@ -1,4 +1,4 @@
-(function (angular, window, undefined) {
+(function (angular, Drupal, window, undefined) {
 
 angular.module('dChess', ['dChess.service', 'dChess.controllers']).
   run(function(gameBoard) {
@@ -6,4 +6,4 @@ angular.module('dChess', ['dChess.service', 'dChess.controllers']).
     gameBoard.generate();
   });
 
-}(angular, this));
+}(angular, Drupal, this));

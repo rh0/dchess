@@ -1,4 +1,4 @@
-(function (angular, window, undefined) {
+(function (angular, Drupal, window, undefined) {
 
 angular.module('dChess.controllers', []).
   controller('ChessCtrl', function($scope, gameBoard) {
@@ -12,6 +12,7 @@ angular.module('dChess.controllers', []).
     }
 
     $scope.clickCapture = function($event) {
+      console.log(Drupal.settings.dchess);
       if(gameBoard.isGameOver() === false) {
         var clickedSquare = $event.target.parentNode.className.trim();
         if(gameBoard.selected === '') {
@@ -33,4 +34,4 @@ angular.module('dChess.controllers', []).
     gameBoard.generate();
   });
 
-}(angular, this))
+}(angular, Drupal, this))

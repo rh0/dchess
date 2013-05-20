@@ -1,4 +1,4 @@
-(function (angular, window, undefined) {
+(function (angular, Drupal, window, undefined) {
 
 angular.module('dChess.service', []).
   value('gameBoard', {
@@ -79,4 +79,4 @@ angular.module('dChess.service', []).
     }
 });
 
-}(angular, this));
+}(angular, Drupal, this));
