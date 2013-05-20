@@ -31,9 +31,8 @@ function dchess_permission() {
 
 function dchess_board_render($game_key = NULL) {
   drupal_add_library('dchess', 'chessjs');
-  drupal_add_js('https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js', 'external');
-  drupal_add_js(drupal_get_path('module', 'dchess') . '/new-chess.js');
-  drupal_add_css(drupal_get_path('module', 'dchess').'/chess.css');
+  drupal_add_library('dchess', 'drupal_chess');
+  drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
   //Our dummy game data, let only user 2 and 3 play
   if(isset($game_key)) {
     $game = array(
@@ -80,9 +79,22 @@ function dchess_library() {
       drupal_get_path('module', 'dchess') . '/chess.js/chess.js' => array(),
     ),
   );
+  $libraries['drupal_chess'] = array(
+    'title' => 'Drupal Chess.js',
+    'version' => '0.1',
+    'js' => array(
+      'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js' => array('external'),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.service.js' => array(),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.controllers.js' => array(),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.client.js' => array(),
+    ),
+  );
   return $libraries;
 }
 
+/**
+ * Implements hook_preprocess_html().
+ */
 function dchess_preprocess_html(&$vars) {
   $vars['attributes_array']['data-ng-app'] = "dChess"; 
 }

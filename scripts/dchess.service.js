@@ -1,3 +1,5 @@
+(function (angular, window, undefined) {
+
 angular.module('dChess.service', []).
   value('gameBoard', {
     board: [],
@@ -18,6 +20,17 @@ angular.module('dChess.service', []).
       'K': '\u2654'
     },
     selected: '',
+    gameStatus: '',
+    isGameOver: function() {
+      if(this.chessJs.game_over() === true) {
+        this.gameStatus = this.chessJs.in_checkmate() ? 'Checkmate! ' : '';
+        this.gameStatus = this.chessJs.in_draw() ? 'Draw! ' : '';
+        this.gameStatus = this.chessJs.in_stalemate() ? 'Stalemate! ' : '';
+        return true;
+      }
+      this.gameStatus = this.chessJs.in_check() ? 'Check.' : '';
+      return false;
+    },
     initialize: function() {
       this.board = new Array(8);
       for(var i=0; i<this.board.length; i++) {
@@ -25,6 +38,7 @@ angular.module('dChess.service', []).
       }
     },
     renderGame: function() {
+      this.isGameOver();
       var fenBoard = this.chessJs.fen().split(' ');
       fenBoard = fenBoard[0].split('/');
       if(this.rotate) { fenBoard.reverse(); }
@@ -63,37 +77,6 @@ angular.module('dChess.service', []).
       this.chessJs.move(moveObj);
       this.renderGame();
     }
-
 });
 
-angular.module('dChess', ['dChess.service']).
-  run(function(gameBoard) {
-    gameBoard.initialize();
-    gameBoard.generate();
-  });
-
-var ChessCtrl = function($scope, gameBoard) {
-  $scope.board = gameBoard.board;
-
-  $scope.rotateBoard = function() {
-    gameBoard.rotate = !gameBoard.rotate;
-    gameBoard.generate();
-  }
-
-  $scope.clickCapture = function($event) {
-    var clickedSquare = $event.target.parentNode.className.toLowerCase().trim();
-    if(gameBoard.selected === '') {
-      var isPiece = gameBoard.chessJs.get(clickedSquare);
-      if(isPiece && isPiece.color === gameBoard.chessJs.turn()) {
-        gameBoard.selected = clickedSquare;
-      }
-    }
-    else {
-      gameBoard.makeMove({ from: gameBoard.selected, to: clickedSquare });
-      gameBoard.selected = '';
-    }
-    gameBoard.generate();
-  }
-
-  gameBoard.generate();
-};
+}(angular, this));
