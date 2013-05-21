@@ -1,19 +1,5 @@
 <?php
 /**
- * Implements hook_menu().
- */
-function dchess_menu() {
-  $items['chess'] = array(
-    'title' => 'Chess',
-    'page callback' => 'dchess_board_render',
-    'access arguments' => array('access content'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  
-  return $items;
-}
-
-/**
  * Implements hook_permission().
  */
 function dchess_permission() {
@@ -27,24 +13,6 @@ function dchess_permission() {
       'description' => t('Allow users to participate in/view  a chess game.'),
     ),
   );
-}
-
-function dchess_board_render($game_key = NULL) {
-  //Our dummy game data, let only user 2 and 3 play
-  if(isset($game_key)) {
-    $game = array(
-      'w' => 2, 
-      'b' => 3,
-      'game_id' => $game_key
-    );
-    drupal_add_js(array('dchess' => drupal_json_encode($game)), array('type' => 'setting'));
-  }
-
-  drupal_add_library('dchess', 'chessjs');
-  drupal_add_library('dchess', 'drupal_chess');
-  drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
-  $output = theme('dchess_board');
-  return $output;
 }
 
 /**
@@ -83,7 +51,7 @@ function dchess_library() {
     'title' => 'Drupal Chess.js',
     'version' => '0.1',
     'js' => array(
-      'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js' => array('external'),
+      drupal_get_path('module', 'dchess') . '/angular/angular.min.js' => array(),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.service.js' => array(),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.controllers.js' => array(),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.client.js' => array(),
@@ -97,4 +65,38 @@ function dchess_library() {
  */
 function dchess_preprocess_html(&$vars) {
   $vars['attributes_array']['data-ng-app'] = "dChess"; 
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function dchess_node_view($node, $view_mode, $langcode) {
+  if($node->type == 'chess_game') {
+    dchess_game_to_json($node);
+    drupal_add_library('dchess', 'chessjs');
+    drupal_add_library('dchess', 'drupal_chess');
+    drupal_add_css(drupal_get_path('module', 'dchess').'/dchess_board.css');
+    $node->content['game_board'] = array(
+      '#markup' => theme('dchess_board'),
+      '#weight' => 1,
+    );
+    return $node;
+  }
+}
+
+function dchess_game_to_json($game_node) {
+  global $user;
+  $game = array(
+    'w' => $game_node->uid, 
+    'b' => $game_node->field_opponent['und'][0]['target_id'],
+    'color' => '',
+    'game_id' => $game_node->nid,
+  );
+  if($user->uid == $game_node->uid) {
+    $game['color'] = 'w';
+  }
+  elseif($user->uid == $game_node->field_opponent['und'][0]['target_id']) {
+    $game['color'] = 'b';
+  }
+  drupal_add_js(array('dchess' => drupal_json_encode($game)), array('type' => 'setting'));
 }

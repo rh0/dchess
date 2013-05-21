@@ -21,6 +21,7 @@ angular.module('dChess.service', []).
     },
     selected: '',
     gameStatus: '',
+    clientColor: '',
     isGameOver: function() {
       if(this.chessJs.game_over() === true) {
         this.gameStatus = this.chessJs.in_checkmate() ? 'Checkmate! ' : '';

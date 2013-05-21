@@ -12,7 +12,6 @@ angular.module('dChess.controllers', []).
     }
 
     $scope.clickCapture = function($event) {
-      console.log(Drupal.settings.dchess);
       if(gameBoard.isGameOver() === false) {
         var clickedSquare = $event.target.parentNode.className.trim();
         if(gameBoard.selected === '') {
