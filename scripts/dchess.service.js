@@ -25,8 +25,8 @@ angular.module('dChess.service', []).
     isGameOver: function() {
       if(this.chessJs.game_over() === true) {
         this.gameStatus = this.chessJs.in_checkmate() ? 'Checkmate! ' : '';
-        this.gameStatus = this.chessJs.in_draw() ? 'Draw! ' : '';
-        this.gameStatus = this.chessJs.in_stalemate() ? 'Stalemate! ' : '';
+        this.gameStatus = this.chessJs.in_draw() ? 'Draw! ' : this.gameStatus + '';
+        this.gameStatus = this.chessJs.in_stalemate() ? 'Stalemate! ' : this.gameStatus + '';
         return true;
       }
       this.gameStatus = this.chessJs.in_check() ? 'Check.' : '';

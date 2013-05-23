@@ -1,22 +1,26 @@
+.chess-info {
+  float: left;
+  margin-right: 50px;
+}
+
 #chess_board span {
-  color:#000;
-  display:block;
-  font-size:50px;
-  height:70px;
+  color: #000;
+  display: block;
+  font-size: 50px;
+  height: 57px;
   position:relative;
-  line-height: 70px;
-  text-shadow:0 1px #fff;
-  width:70px;
+  line-height: 57px;
+  text-shadow: 0 1px #fff;
+  width: 57px;
   text-decoration: none;
-  font-family: Meiryo;
 }
 
 #board_content {
-  display: block;
-  width: 570px;
+  float: left;
+  width: 466px;
   padding: 7px;
   border: 2px solid #333;
-  margin: 0 auto;
+  margin: 0;
 }
 
 #chess_board { border:5px solid #333; }
