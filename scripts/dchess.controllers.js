@@ -12,7 +12,7 @@ angular.module('dChess.controllers', []).
     }
 
     $scope.clickCapture = function($event) {
-      if(gameBoard.isGameOver() === false/* && gameBoard.chessJs.turn() === gameBoard.clientColor*/) {
+      if(gameBoard.isGameOver() === false && gameBoard.chessJs.turn() === gameBoard.clientColor) {
         var clickedSquare = $event.target.parentNode.className.trim();
         if(gameBoard.selected === '') {
           var isPiece = gameBoard.chessJs.get(clickedSquare);
