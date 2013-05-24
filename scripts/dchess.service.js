@@ -76,7 +76,16 @@ angular.module('dChess.service', []).
     },
     makeMove: function(moveObj) {
       this.chessJs.move(moveObj);
+      this.sendMove();
       this.renderGame();
+    },
+    sendMove: function() {
+      Drupal.Nodejs.socket.emit('message', {
+        channel: 1,
+        type: 'move',
+        turn: this.chessJs.turn(),
+        moveFen: this.chessJs.fen()
+      });
     }
 });
 
