@@ -30,6 +30,12 @@ angular.module('dChess.controllers', []).
       $scope.gameStatus = gameBoard.gameStatus;
     }
 
+    Drupal.Nodejs.callbacks.dChess = {
+      callback: function (message) {
+        console.log(message);
+      }
+    };
+
     gameBoard.generate();
   });
 

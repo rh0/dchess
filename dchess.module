@@ -20,7 +20,7 @@ function dchess_permission() {
  */
 function dchess_nodejs_handlers_info() {
   return array(
-    //drupal_get_path('module', 'dchess').'/dchess.client.js',
+    drupal_get_path('module', 'dchess').'/scripts/dchess.controllers.js',
   );
 }
 
@@ -52,9 +52,9 @@ function dchess_library() {
     'version' => '0.1',
     'js' => array(
       drupal_get_path('module', 'dchess') . '/angular/angular.min.js' => array(),
-      drupal_get_path('module', 'dchess') . '/scripts/dchess.service.js' => array(),
-      drupal_get_path('module', 'dchess') . '/scripts/dchess.controllers.js' => array(),
-      drupal_get_path('module', 'dchess') . '/scripts/dchess.client.js' => array(),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.service.js' => array('scope' => 'footer'),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.controllers.js' => array('scope' => 'footer'),
+      drupal_get_path('module', 'dchess') . '/scripts/dchess.client.js' => array('scope' => 'footer'),
     ),
   );
   return $libraries;
