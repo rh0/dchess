@@ -81,7 +81,7 @@ angular.module('dChess.service', []).
     },
     sendMove: function() {
       Drupal.Nodejs.socket.emit('message', {
-        channel: 1,
+        channel: 'dchess_game_1',
         type: 'move',
         turn: this.chessJs.turn(),
         moveFen: this.chessJs.fen()

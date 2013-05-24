@@ -16,7 +16,6 @@ var publishMessageToClient,
     gameCount = 0;
 
 exports.setup = function (config) {
-  console.log(config);
   publishMessageToClient = config.publishMessageToClient;
   publishMessageToChannel = config.publishMessageToChannel;
 
@@ -26,6 +25,7 @@ exports.setup = function (config) {
   })
   .on('client-authenticated', function (sessionId, authData) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
+    console.log(authData);
     //publishMessageToClient(sessionId, {type: 'auth', isauth: true});
   })
   .on('client-message', function (sessionId, message) {

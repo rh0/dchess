@@ -65,6 +65,8 @@ function dchess_library() {
  */
 function dchess_node_view($node, $view_mode, $langcode) {
   if($node->type == 'chess_game') {
+    global $user;
+    nodejs_add_user_to_channel($user->uid, 'dchess_game_' . $node->nid);
     dchess_game_to_json($node);
     drupal_add_library('dchess', 'chessjs');
     drupal_add_library('dchess', 'drupal_chess');
