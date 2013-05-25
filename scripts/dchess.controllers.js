@@ -21,7 +21,9 @@ angular.module('dChess.controllers', []).
           }
         }
         else {
-          gameBoard.makeMove({ from: gameBoard.selected, to: clickedSquare });
+          moveObj = { from: gameBoard.selected, to: clickedSquare };
+          gameBoard.makeMove(moveObj);
+          gameBoard.sendMove(moveObj);
           gameBoard.selected = '';
         }
         gameBoard.generate();
@@ -32,7 +34,13 @@ angular.module('dChess.controllers', []).
 
     Drupal.Nodejs.callbacks.dChess = {
       callback: function (message) {
-        console.log(message);
+        $scope.$apply(function() { 
+          gameBoard.makeMove(message.move)
+          gameBoard.isGameOver();
+          $scope.board = gameBoard.board;
+          $scope.gameStatus = gameBoard.gameStatus;
+          $scope.turn = gameBoard.chessJs.turn();
+        });
       }
     };
 

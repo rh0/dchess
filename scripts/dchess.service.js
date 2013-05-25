@@ -3,6 +3,7 @@
 angular.module('dChess.service', []).
   value('gameBoard', {
     board: [],
+    id: '',
     rotate: false,
     chessJs: new Chess(),
     pieces: {
@@ -76,14 +77,14 @@ angular.module('dChess.service', []).
     },
     makeMove: function(moveObj) {
       this.chessJs.move(moveObj);
-      this.sendMove();
-      this.renderGame();
+      this.generate();
     },
-    sendMove: function() {
+    sendMove: function(moveObj) {
       Drupal.Nodejs.socket.emit('message', {
-        channel: 'dchess_game_1',
+        channel: this.id,
         type: 'move',
         turn: this.chessJs.turn(),
+        move: moveObj,
         moveFen: this.chessJs.fen()
       });
     }
