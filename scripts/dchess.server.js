@@ -25,7 +25,7 @@ exports.setup = function (config) {
   })
   .on('client-authenticated', function (sessionId, authData) {
     console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
-    console.log(authData);
+    //console.log(authData);
     //publishMessageToClient(sessionId, {type: 'auth', isauth: true});
   })
   .on('client-message', function (sessionId, message) {
@@ -34,7 +34,8 @@ exports.setup = function (config) {
     handleMessage(sessionId, message, config);
   })
   .on('client-disconnect', function (sessionId) {
-    console.log('Got disconnect event for session ' + sessionId);
+    console.log('###===---   Got disconnect event for session ' + sessionId);
+    console.log(config);
   });
 };
 
