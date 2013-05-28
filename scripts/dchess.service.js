@@ -5,7 +5,7 @@ angular.module('dChess.service', []).
     board: [],
     id: '',
     rotate: false,
-    chessJs: new Chess(),
+    chessJs: {},
     pieces: {
       'p': '\u265F',
       'r': '\u265C',

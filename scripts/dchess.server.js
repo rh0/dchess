@@ -12,12 +12,12 @@
 // This is likely better practice, and at least will allow for some experience.
 var publishMessageToClient,
     publishMessageToChannel,
-    gameChannel = 'chessChannel',
-    gameCount = 0;
+    sendMessageToBackend;
 
 exports.setup = function (config) {
   publishMessageToClient = config.publishMessageToClient;
   publishMessageToChannel = config.publishMessageToChannel;
+  sendMessageToBackend = config.sendMessageToBackend;
 
   process.on('client-connection', function (sessionId) {
     console.log('Got connection event for session ' + sessionId);
@@ -35,14 +35,21 @@ exports.setup = function (config) {
   })
   .on('client-disconnect', function (sessionId) {
     console.log('###===---   Got disconnect event for session ' + sessionId);
-    console.log(config);
   });
 };
 
 function handleMessage(sessionId, message) {
   switch(message.type) {
     case "move":
-      publishMessageToChannel(message);
+      message.messageType = message.type;
+      sendMessageToBackend(message, function(error, responce, body) {
+        if(error) {
+          console.log("Error sending message to backend: ", error);
+          return;
+        }
+        publishMessageToChannel(message);
+        console.log("Derpal responce: ", body);
+      });
       break;
   }
 }

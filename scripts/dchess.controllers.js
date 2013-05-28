@@ -34,13 +34,15 @@ angular.module('dChess.controllers', []).
 
     Drupal.Nodejs.callbacks.dChess = {
       callback: function (message) {
-        $scope.$apply(function() { 
-          gameBoard.makeMove(message.move)
-          gameBoard.isGameOver();
-          $scope.board = gameBoard.board;
-          $scope.gameStatus = gameBoard.gameStatus;
-          $scope.turn = gameBoard.chessJs.turn();
-        });
+        if(gameBoard.id === message.channel) {
+          $scope.$apply(function() { 
+            gameBoard.makeMove(message.move)
+            gameBoard.isGameOver();
+            $scope.board = gameBoard.board;
+            $scope.gameStatus = gameBoard.gameStatus;
+            $scope.turn = gameBoard.chessJs.turn();
+          });
+        }
       }
     };
 

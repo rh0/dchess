@@ -25,6 +25,40 @@ function dchess_nodejs_handlers_info() {
 }
 
 /**
+ * Implements hook_nodejs_message_callback
+ */
+function dchess_nodejs_message_callback($type) {
+  watchdog('dchess', "message recieved from node of type: " . $type, array(), WATCHDOG_INFO);
+  switch($type) {
+    case 'move':
+      return array('dchess_record_move');
+  }
+  return false;
+}
+
+function dchess_record_move($message, &$responce) {
+  watchdog('dchess', "message recieved from node: " . $message['channel'], array(), WATCHDOG_INFO);
+  $responce = "Derpal got the message \n";
+  if(isset($message['channel'])) {
+    $game_id = explode('_', $message['channel']);
+    $game_node = new stdClass;
+    $game_node->nid = array_pop($game_id);
+    $game_node->type = "chess_game";
+    $game_node->field_fen['und'][0]['value'] = $message['moveFen'];
+    node_save($game_node);
+    if(!$game_node->nid) {
+      $responce .= "ERROR: Node did not save!";
+    }
+    else {
+      $responce .= "Success! Node updated.";
+    }
+  }
+  else {
+    $responce .= "ERROR: Invalid message, no channel id";
+  }
+}
+
+/**
  * Implements hook_theme().
  */
 function dchess_theme($existing, $type, $theme, $path) {
@@ -66,7 +100,6 @@ function dchess_library() {
 function dchess_node_view($node, $view_mode, $langcode) {
   if($node->type == 'chess_game') {
     global $user;
-    dsm($user);
     nodejs_add_user_to_channel($user->uid, 'dchess_game_' . $node->nid);
     dchess_game_to_json($node);
     drupal_add_library('dchess', 'chessjs');
@@ -86,6 +119,7 @@ function dchess_game_to_json($game_node) {
     'b' => $game_node->field_opponent['und'][0]['target_id'],
     'color' => '',
     'game_id' => $game_node->nid,
+    'game_fen' => $game_node->field_fen['und'][0]['value'],
   );
   if($user->uid == $game_node->uid) {
     $game['color'] = 'w';
