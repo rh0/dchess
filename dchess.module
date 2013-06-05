@@ -85,7 +85,8 @@ function dchess_library() {
     'title' => 'Drupal Chess.js',
     'version' => '0.1',
     'js' => array(
-      drupal_get_path('module', 'dchess') . '/angular/angular.min.js' => array(),
+      //drupal_get_path('module', 'dchess') . '/angular/angular.min.js' => array(),
+      'https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js' => array(),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.service.js' => array('scope' => 'footer'),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.controllers.js' => array('scope' => 'footer'),
       drupal_get_path('module', 'dchess') . '/scripts/dchess.client.js' => array('scope' => 'footer'),
