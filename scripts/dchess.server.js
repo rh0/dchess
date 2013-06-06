@@ -10,46 +10,49 @@
 
 // Consider reworking this var into a module, and including our functions below.
 // This is likely better practice, and at least will allow for some experience.
-var publishMessageToClient,
-    publishMessageToChannel,
-    sendMessageToBackend;
 
 exports.setup = function (config) {
-  publishMessageToClient = config.publishMessageToClient;
-  publishMessageToChannel = config.publishMessageToChannel;
-  sendMessageToBackend = config.sendMessageToBackend;
-
-  process.on('client-connection', function (sessionId) {
-    console.log('Got connection event for session ' + sessionId);
-    //publishMessageToClient(sessionId, {data: {subject: 'Example extension', body: 'Hello, you just connected.'}});
-  })
-  .on('client-authenticated', function (sessionId, authData) {
-    console.log('Got authenticated event for session ' + sessionId + ' (user ' + authData.uid + ')');
-    //console.log(authData);
-    //publishMessageToClient(sessionId, {type: 'auth', isauth: true});
-  })
-  .on('client-message', function (sessionId, message) {
-    console.log("Recieved a message: \n");
-    console.log(message);
+  process.on('client-message', function (sessionId, message) {
+    if(config.settings.debug) {
+      console.log("Recieved a message: \n");
+      console.log(message);
+    }
     handleMessage(sessionId, message, config);
-  })
-  .on('client-disconnect', function (sessionId) {
-    console.log('###===---   Got disconnect event for session ' + sessionId);
   });
 };
 
-function handleMessage(sessionId, message) {
+function handleMessage(sessionId, message, config) {
   switch(message.type) {
     case "move":
       message.messageType = message.type;
-      sendMessageToBackend(message, function(error, responce, body) {
+      config.sendMessageToBackend(message, function(error, responce, body) {
         if(error) {
           console.log("Error sending message to backend: ", error);
           return;
         }
-        publishMessageToChannel(message);
-        console.log("Derpal responce: ", body);
+        sendMessageToTokenChannel(message, config);
+        if(config.settings.debug) {
+          console.log("Derpal responce: ", body);
+        }
       });
       break;
   }
+}
+
+function sendMessageToTokenChannel(message, config) {
+  if (!message.hasOwnProperty('channel')) {
+    console.log('publishMessageToContentChannel: An invalid message object was provided.');
+    //response.send({error: 'Invalid message'});
+    return;
+  }
+  if (!config.tokenChannels.hasOwnProperty(message.channel)) {
+    console.log('publishMessageToContentChannel: The channel "' + message.channel + '" doesn\'t exist.');
+    //response.send({error: 'Invalid message'});
+    return;
+  }
+
+  for (var socketId in config.tokenChannels[message.channel].sockets) {
+    config.publishMessageToClient(socketId, message);
+  }
+  //response.send({sent: 'sent'});
 }
