@@ -8,7 +8,7 @@
   <?php endif; ?>
   <?php print render($title_suffix); ?>
 
-  <div class="content clearfix"<?php print $content_attributes; ?> data-ng-controller="ChessCtrl">
+  <div class="content clearfix ng-cloak"<?php print $content_attributes; ?> data-ng-cloak data-ng-controller="ChessCtrl">
     <div class="chess-info">
       <div class="field game-status">
         <div class="field-label">Game Status: </div>
